@@ -7,11 +7,11 @@ export default class ProjectController {
         const { name, budget, category } = req.body
 
         try {
-            const novoUsuario = await AppDataSource.query(`
+            const novoProjeto = await AppDataSource.query(`
                 INSERT INTO projects (name, budget, category_id) VALUES ($1, $2, $3)
             `, [name, budget, category ])
 
-            return res.json({message: "Usuário Cadastrado!"})
+            return res.json(novoProjeto)
         } catch (error) {
             console.log(error)
             return res.json({message: "Internal Server Error"})
