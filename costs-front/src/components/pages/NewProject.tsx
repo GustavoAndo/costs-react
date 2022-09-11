@@ -7,18 +7,12 @@ function NewProject() {
     const navigate = useNavigate()
 
     function createPost(project: any) {
-        const saveProject = {
-            name: project.name,
-            budget: project.budget,
-            category: project.category.id
-        }
-
         fetch('http://localhost:5000/project/newProject', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(saveProject),
+          body: JSON.stringify(project),
         })
           .then((resp) => resp.json())
           .then((data) => {
