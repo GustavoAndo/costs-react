@@ -19,6 +19,7 @@ export default class ProjectController {
     }
     
     async projects (req: Request, res: Response) {
+        const { id } = req.body
         try{
             const projects = await AppDataSource.manager.find(Project, {
 				relations: {
@@ -29,7 +30,6 @@ export default class ProjectController {
                     id: "DESC"
                 }
 			})
-
             return res.json(projects)
         } catch(error) {
             console.log(error)
@@ -37,4 +37,18 @@ export default class ProjectController {
         }
     }
 
+    async deleteProject(req: Request, res: Response) {
+        const { id } = req.params
+        try {   
+            const project: any = await AppDataSource.manager.findOneBy(Project, { id: Number(id) })
+            if (!project){
+                return res.json({message: "Id inválido!"})
+            }
+            const deleteProject = await AppDataSource.manager.remove(Project, project)
+            return res.json(project)     
+        } catch (error) {
+            console.log(error)
+            return res.json({message: "Internal Server Error"})
+        }
+    }
 }
