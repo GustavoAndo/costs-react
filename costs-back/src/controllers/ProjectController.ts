@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { AppDataSource } from "../data-source"
+import { AppDataSource } from "../data-source";
+import { Project } from "../entities/Project";
 
 export default class ProjectController {
 
@@ -7,12 +8,30 @@ export default class ProjectController {
         const { name, budget, category } = req.body
 
         try {
-            const novoProjeto = await AppDataSource.query(`
-                INSERT INTO projects (name, budget, category_id) VALUES ($1, $2, $3)
-            `, [name, budget, category ])
+			const newProject = AppDataSource.manager.create(Project, { name, budget, category })
+			await AppDataSource.manager.save(Project, newProject)
 
-            return res.json(novoProjeto)
+            return res.json(newProject)
         } catch (error) {
+            console.log(error)
+            return res.json({message: "Internal Server Error"})
+        }
+    }
+    
+    async projects (req: Request, res: Response) {
+        try{
+            const projects = await AppDataSource.manager.find(Project, {
+				relations: {
+					services: true,
+					category: true,
+				},
+                order: {
+                    id: "DESC"
+                }
+			})
+
+            return res.json(projects)
+        } catch(error) {
             console.log(error)
             return res.json({message: "Internal Server Error"})
         }
